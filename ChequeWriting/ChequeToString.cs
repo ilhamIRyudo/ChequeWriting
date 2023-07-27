@@ -10,6 +10,11 @@ namespace ChequeWriting
     {
         public string ChangeToString(string input)
         {
+            if (!float.TryParse(input, out float j))
+            {
+                return "Inputed value is not number";
+            }
+
             var result = "";
             var strSplit = input.Split('.');
             var prevNumber = "";
@@ -18,23 +23,42 @@ namespace ChequeWriting
             var numberInput = strSplit[0];
             var numberInputSplit = numberInput.ToCharArray().Reverse();
             var numberCount = numberInputSplit.Count();
-            foreach ( var number in numberInputSplit )
+
+            var numberInputList = numberInputSplit.ToList();
+            var tmpNumberStr = "";
+            var tmpThreeNumberList = new List<string>();
+            for(int x = 0; x < numberCount; x++)
             {
-                if(numberCount == 1)
+                tmpNumberStr = numberInputList[x] + tmpNumberStr;
+                if (tmpNumberStr.Length == 3 || x + 1 == numberCount)
                 {
-                    result += ChangeNumberToString(i, number.ToString(), "0", numberCount);
+                    tmpThreeNumberList.Add(tmpNumberStr);
+                    tmpNumberStr = "";
                 }
-                else if (numberCount > 1)
-                {
-                    result = ChangeNumberToString(i, number.ToString(), prevNumber, numberCount) + result;
-                    prevNumber = number.ToString();
-                }
-                
-                i++;
             }
 
-            result += " Dollars ";
+            result = ChangeNumberToStr(tmpThreeNumberList);
 
+            #region old logic
+            //foreach (var number in numberInputSplit)
+            //{
+            //    if (numberCount == 1)
+            //    {
+            //        result += ChangeNumberToString(i, number.ToString(), "0", numberCount);
+            //    }
+            //    else if (numberCount > 1)
+            //    {
+            //        result = ChangeNumberToString(i, number.ToString(), prevNumber, numberCount) + result;
+            //        prevNumber = number.ToString();
+            //    }
+
+            //    i++;
+            //}
+            #endregion
+
+            result += "Dollars";
+
+            
             if (strSplit.Length > 1) 
             {
                 Dictionary<int, string> decimalPairs = new Dictionary<int, string>();
@@ -43,26 +67,155 @@ namespace ChequeWriting
                 var decimalCount = decimalInputSplit.Count();
                 i = 1;
 
-                result += " and ";
+               
 
-                foreach (var number in decimalInputSplit)
+                #region old logic
+                //foreach (var number in decimalInputSplit)
+                //{
+                //    if (decimalCount == 1)
+                //    {
+                //        result = result + ChangeNumberToString(i, number.ToString(), "0", decimalCount);
+                //    }
+                //    else if (decimalCount > 1)
+                //    {
+                //        result = result + ChangeNumberToString(i, number.ToString(), prevNumber, decimalCount);
+                //        prevNumber = number.ToString();
+                //    }
+
+                //    i++;
+                //}
+                #endregion
+
+                var decimalInputList = decimalInputSplit.ToList();
+                var tmpDecimalStr = "";
+                var tmpThreeDecimalList = new List<string>();
+                for (int x = 0; x < decimalCount; x++)
                 {
-                    if (decimalCount == 1)
+                    tmpDecimalStr = decimalInputList[x] + tmpDecimalStr;
+                    if (tmpDecimalStr.Length == 3 || x + 1 == decimalCount)
                     {
-                        result += ChangeNumberToString(i, number.ToString(), "0", decimalCount);
+                        tmpThreeDecimalList.Add(tmpDecimalStr);
+                        tmpDecimalStr = "";
                     }
-                    else if (decimalCount > 1)
-                    {
-                        result = ChangeNumberToString(i, number.ToString(), prevNumber, decimalCount) + result;
-                        prevNumber = number.ToString();
-                    }
-
-                    i++;
                 }
+
+                var tmpDecimalResult = ChangeNumberToStr(tmpThreeDecimalList);
+                if(tmpDecimalResult != "Zero ")
+                {
+                    result =  result + " and " + ChangeNumberToStr(tmpThreeDecimalList) + "Cents";   
+                }
+                
             }
             
-            //result += strInput[0];
             return result;
+        }
+
+        private string ChangeNumberToStr(List<string> tmpThreeNumberList)
+        {
+            string result = "";
+
+            for (int n = 0; n < tmpThreeNumberList.Count; n++)
+            {
+                var tmpThreeNumberArray = tmpThreeNumberList[n].ToCharArray().ToList();
+                
+                if (tmpThreeNumberArray.Count == 3)
+                {
+                    var tmpResult = NumberStringOneToNine(tmpThreeNumberArray[0].ToString());
+                    if (tmpResult == "Zero ")
+                    {
+                        tmpResult = "";
+                    }
+
+                    var doubleResult = "";
+                    if(tmpThreeNumberArray[1].ToString() == "0")
+                    {
+                        if(tmpThreeNumberArray[2].ToString() != "0")
+                        {
+                            doubleResult = NumberStringOneToNine(tmpThreeNumberArray[2].ToString());
+                        }
+                    }
+                    else
+                    {
+                        doubleResult = NumberStringTenUp(tmpThreeNumberArray[1].ToString(), tmpThreeNumberArray[2].ToString());
+                    }
+                    
+                    if (doubleResult == "Zero " || doubleResult == "")
+                    {
+                        if(tmpResult != "")
+                        {
+                            doubleResult = GetValueName(n, 2, doubleResult);
+                        }
+                        else
+                        {
+                            doubleResult = "";
+                        }
+                    }
+                    else
+                    {
+                        doubleResult = doubleResult + GetValueName(n, 2, doubleResult);
+                    }
+
+                    result = tmpResult + GetValueName(n, 3, tmpResult) + doubleResult + result;
+                }
+                else if (tmpThreeNumberArray.Count == 2)
+                {
+                    var tmpResult = NumberStringTenUp(tmpThreeNumberArray[0].ToString(), tmpThreeNumberArray[1].ToString());
+                    result = tmpResult + GetValueName(n, 2, tmpResult) + result;
+                }
+                else if (tmpThreeNumberArray.Count == 1)
+                {
+                    var tmpResult = NumberStringOneToNine(tmpThreeNumberArray[0].ToString());
+                    result = tmpResult + GetValueName(n, 1, tmpResult) + result;
+                }
+            }
+
+            return result;
+        }
+
+        private string GetValueName(int n, int counter, string result)
+        {
+            if(counter == 3)
+            {
+                if(result != "")
+                {
+                    return "Hundred ";
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            else
+            {
+                if (n == 1)
+                {
+                    return "Thousand ";
+                }
+                else if(n == 2)
+                {
+                    return "Million ";
+                }
+                else if (n == 3)
+                {
+                    return "Billion ";
+                }
+                else if (n == 4)
+                {
+                    return "Trillion ";
+                }
+                else if (n == 5)
+                {
+                    return "Quadrillion ";
+                }
+                else if (n == 6)
+                {
+                    return "Quintrillion ";
+                }
+                else
+                {
+                    return "";
+                }
+            }
         }
 
         private string ChangeNumberToString(int key, string input, string inputPrevious, int length)
@@ -72,23 +225,26 @@ namespace ChequeWriting
                 var result = "";
                 if(key == 1 && length == 1) // single
                 {
-                    result += NumberStringOneToNine(input);
+                    result += NumberStringOneToNine(input) + " ";
                 }
                 else if(key == 2) // double
                 {
                     if(input == "0")
                     {
-                        result += NumberStringOneToNine(inputPrevious);
+                        if(inputPrevious != "0")
+                        {
+                            result += NumberStringOneToNine(inputPrevious) + " ";
+                        }
                     }
                     else
                     {
-                        result += NumberStringTenUp(input, inputPrevious);
+                        result += NumberStringTenUp(input, inputPrevious) + " ";
                     }
                     
                 }
                 else if (key % 3 == 0) // a hundred
                 {
-                    if(input != "0")
+                    if(input != "0" )
                     {
                         result += NumberStringOneToNine(input) + " Hundred ";
                     }
@@ -103,7 +259,15 @@ namespace ChequeWriting
                     {
                         if(input == "0")
                         {
-                            result += NumberStringOneToNine(inputPrevious) + " Thousand ";
+                            if(inputPrevious != "0")
+                            {
+                                result += NumberStringOneToNine(inputPrevious) + " Thousand ";
+                            }
+                            else if(inputPrevious == "0" && length >= 5)
+                            {
+                                result += "Thousand ";
+                            }
+                            
                         }
                         else
                         {
@@ -123,7 +287,14 @@ namespace ChequeWriting
                     {
                         if (input == "0")
                         {
-                            result += NumberStringOneToNine(inputPrevious) + " Million ";
+                            if(inputPrevious != "0")
+                            {
+                                result += NumberStringOneToNine(inputPrevious) + " Million ";
+                            }
+                            else if(inputPrevious == "0" && (length == 8 || length == 9))
+                            {
+                                result += "Million ";
+                            }
                         }
                         else
                         {
@@ -142,7 +313,14 @@ namespace ChequeWriting
                     {
                         if (input == "0")
                         {
-                            result += NumberStringOneToNine(inputPrevious) + " Billion ";
+                            if (inputPrevious != "0")
+                            {
+                                result += NumberStringOneToNine(inputPrevious) + " Billion ";
+                            }
+                            else if (inputPrevious == "0" && (length == 11 || length == 12))
+                            {
+                                result += "Billion ";
+                            }
                         }
                         else
                         {
@@ -161,7 +339,14 @@ namespace ChequeWriting
                     {
                         if (input == "0")
                         {
-                            result += NumberStringOneToNine(inputPrevious) + " Trillion ";
+                            if (inputPrevious != "0")
+                            {
+                                result += NumberStringOneToNine(inputPrevious) + " Trillion ";
+                            }
+                            else if (inputPrevious == "0" && (length == 14 || length == 15))
+                            {
+                                result += "Trillion ";
+                            }
                         }
                         else
                         {
@@ -180,7 +365,14 @@ namespace ChequeWriting
                     {
                         if (input == "0")
                         {
-                            result += NumberStringOneToNine(inputPrevious) + " Quadrillion ";
+                            if (inputPrevious != "0")
+                            {
+                                result += NumberStringOneToNine(inputPrevious) + " Quadrillion ";
+                            }
+                            else if (inputPrevious == "0" && (length == 17 || length == 18))
+                            {
+                                result += "Quadrillion ";
+                            }
                         }
                         else
                         {
@@ -199,7 +391,14 @@ namespace ChequeWriting
                     {
                         if (input == "0")
                         {
-                            result += NumberStringOneToNine(inputPrevious) + " Quintrillion ";
+                            if (inputPrevious != "0")
+                            {
+                                result += NumberStringOneToNine(inputPrevious) + " Quintrillion ";
+                            }
+                            else if (inputPrevious == "0" && (length == 20 || length == 21))
+                            {
+                                result += "Quintrillion ";
+                            }
                         }
                         else
                         {
@@ -224,43 +423,43 @@ namespace ChequeWriting
 
             if(inputInt == 1)
             {
-                return "One";
+                return "One ";
             }
             else if(inputInt == 2)
             {
-                return "Two";
+                return "Two ";
             }
             else if (inputInt == 3)
             {
-                return "Three";
+                return "Three ";
             }
             else if (inputInt == 4)
             {
-                return "Four";
+                return "Four ";
             }
             else if (inputInt == 5)
             {
-                return "Five";
+                return "Five ";
             }
             else if (inputInt == 6)
             {
-                return "Six";
+                return "Six ";
             }
             else if (inputInt == 7)
             {
-                return "Seven";
+                return "Seven ";
             }
             else if (inputInt == 8)
             {
-                return "Eight";
+                return "Eight ";
             }
             else if (inputInt == 9)
             {
-                return "Nine";
+                return "Nine ";
             }
             else
             {
-                return "Zero";
+                return "Zero ";
             }
         }
 
@@ -270,47 +469,47 @@ namespace ChequeWriting
 
             if (inputInt == 10)
             {
-                return "Ten";
+                return "Ten ";
             }
             else if (inputInt == 11)
             {
-                return "Eleven";
+                return "Eleven ";
             }
             else if (inputInt == 12)
             {
-                return "Twelve";
+                return "Twelve ";
             }
             else if (inputInt == 13)
             {
-                return "Thirteen";
+                return "Thirteen ";
             }
             else if (inputInt == 14)
             {
-                return "FourTeen";
+                return "FourTeen ";
             }
             else if (inputInt == 15)
             {
-                return "FifTeen";
+                return "FifTeen ";
             }
             else if (inputInt == 16)
             {
-                return "SixTeen";
+                return "SixTeen ";
             }
             else if (inputInt == 17)
             {
-                return "SevenTeen";
+                return "SevenTeen ";
             }
             else if (inputInt == 18)
             {
-                return "EightTeen";
+                return "EightTeen ";
             }
             else if (inputInt == 19)
             {
-                return "NineTeen";
+                return "NineTeen ";
             }
             else if (inputInt == 20)
             {
-                return "Twenty";
+                return "Twenty ";
             }
             else if (inputInt > 20 && inputInt < 30)
             {
@@ -318,7 +517,7 @@ namespace ChequeWriting
             }
             else if (inputInt == 30)
             {
-                return "Thirty";
+                return "Thirty ";
             }
             else if (inputInt > 30 && inputInt < 40)
             {
@@ -326,7 +525,7 @@ namespace ChequeWriting
             }
             else if (inputInt == 40)
             {
-                return "Fourty";
+                return "Fourty ";
             }
             else if (inputInt > 40 && inputInt < 50)
             {
@@ -334,7 +533,7 @@ namespace ChequeWriting
             }
             else if (inputInt == 50)
             {
-                return "Fifty";
+                return "Fifty ";
             }
             else if (inputInt > 50 && inputInt < 60)
             {
@@ -342,7 +541,7 @@ namespace ChequeWriting
             }
             else if (inputInt == 60)
             {
-                return "Sixty";
+                return "Sixty ";
             }
             else if (inputInt > 60 && inputInt < 70)
             {
@@ -350,7 +549,7 @@ namespace ChequeWriting
             }
             else if (inputInt == 70)
             {
-                return "Seventy";
+                return "Seventy ";
             }
             else if (inputInt > 70 && inputInt < 80)
             {
@@ -358,7 +557,7 @@ namespace ChequeWriting
             }
             else if (inputInt == 80)
             {
-                return "Eighty";
+                return "Eighty ";
             }
             else if (inputInt > 80 && inputInt < 90)
             {
@@ -366,7 +565,7 @@ namespace ChequeWriting
             }
             else if (inputInt == 90)
             {
-                return "Ninety";
+                return "Ninety ";
             }
             else if (inputInt > 90 && inputInt < 100)
             {
@@ -374,7 +573,7 @@ namespace ChequeWriting
             }
             else
             {
-                return "Zero";
+                return "Zero ";
             }
         }
     }
