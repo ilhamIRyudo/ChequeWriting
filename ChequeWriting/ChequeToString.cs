@@ -17,8 +17,11 @@ namespace ChequeWriting
 
             var result = "";
             var strSplit = input.Split('.');
-            var prevNumber = "";
-            int i = 1;
+
+            #region old variable
+            //var prevNumber = "";
+            //int i = 1;
+            #endregion
 
             var numberInput = strSplit[0];
             var numberInputSplit = numberInput.ToCharArray().Reverse();
@@ -61,15 +64,12 @@ namespace ChequeWriting
             
             if (strSplit.Length > 1) 
             {
-                Dictionary<int, string> decimalPairs = new Dictionary<int, string>();
                 var decimalInput = strSplit[1];
                 var decimalInputSplit = decimalInput.ToCharArray().Reverse();
                 var decimalCount = decimalInputSplit.Count();
-                i = 1;
-
-               
 
                 #region old logic
+                //i = 1;
                 //foreach (var number in decimalInputSplit)
                 //{
                 //    if (decimalCount == 1)
@@ -218,205 +218,206 @@ namespace ChequeWriting
             }
         }
 
-        private string ChangeNumberToString(int key, string input, string inputPrevious, int length)
-        {
-            try
-            {
-                var result = "";
-                if(key == 1 && length == 1) // single
-                {
-                    result += NumberStringOneToNine(input) + " ";
-                }
-                else if(key == 2) // double
-                {
-                    if(input == "0")
-                    {
-                        if(inputPrevious != "0")
-                        {
-                            result += NumberStringOneToNine(inputPrevious) + " ";
-                        }
-                    }
-                    else
-                    {
-                        result += NumberStringTenUp(input, inputPrevious) + " ";
-                    }
+        #region old logic
+        //private string ChangeNumberToString(int key, string input, string inputPrevious, int length)
+        //{
+        //    try
+        //    {
+        //        var result = "";
+        //        if(key == 1 && length == 1) // single
+        //        {
+        //            result += NumberStringOneToNine(input) + " ";
+        //        }
+        //        else if(key == 2) // double
+        //        {
+        //            if(input == "0")
+        //            {
+        //                if(inputPrevious != "0")
+        //                {
+        //                    result += NumberStringOneToNine(inputPrevious) + " ";
+        //                }
+        //            }
+        //            else
+        //            {
+        //                result += NumberStringTenUp(input, inputPrevious) + " ";
+        //            }
                     
-                }
-                else if (key % 3 == 0) // a hundred
-                {
-                    if(input != "0" )
-                    {
-                        result += NumberStringOneToNine(input) + " Hundred ";
-                    }
-                }
-                else if (key == 4 || key == 5) // a thousand
-                {
-                    if(key == 4 && length == 4)
-                    {
-                        result += NumberStringOneToNine(input) + " Thousand ";
-                    }
-                    else if (key == 5 && length >= 5)
-                    {
-                        if(input == "0")
-                        {
-                            if(inputPrevious != "0")
-                            {
-                                result += NumberStringOneToNine(inputPrevious) + " Thousand ";
-                            }
-                            else if(inputPrevious == "0" && length >= 5)
-                            {
-                                result += "Thousand ";
-                            }
+        //        }
+        //        else if (key % 3 == 0) // a hundred
+        //        {
+        //            if(input != "0" )
+        //            {
+        //                result += NumberStringOneToNine(input) + " Hundred ";
+        //            }
+        //        }
+        //        else if (key == 4 || key == 5) // a thousand
+        //        {
+        //            if(key == 4 && length == 4)
+        //            {
+        //                result += NumberStringOneToNine(input) + " Thousand ";
+        //            }
+        //            else if (key == 5 && length >= 5)
+        //            {
+        //                if(input == "0")
+        //                {
+        //                    if(inputPrevious != "0")
+        //                    {
+        //                        result += NumberStringOneToNine(inputPrevious) + " Thousand ";
+        //                    }
+        //                    else if(inputPrevious == "0" && length >= 5)
+        //                    {
+        //                        result += "Thousand ";
+        //                    }
                             
-                        }
-                        else
-                        {
-                            result += NumberStringTenUp(input, inputPrevious) + " Thousand ";
-                        }
+        //                }
+        //                else
+        //                {
+        //                    result += NumberStringTenUp(input, inputPrevious) + " Thousand ";
+        //                }
                         
-                    }
+        //            }
                     
-                }
-                else if (key == 7 || key == 8) // a million
-                {
-                    if (key == 7 && length == 7)
-                    {
-                        result += NumberStringOneToNine(input) + " Million ";
-                    }
-                    else if (key == 8 && length >= 8)
-                    {
-                        if (input == "0")
-                        {
-                            if(inputPrevious != "0")
-                            {
-                                result += NumberStringOneToNine(inputPrevious) + " Million ";
-                            }
-                            else if(inputPrevious == "0" && (length == 8 || length == 9))
-                            {
-                                result += "Million ";
-                            }
-                        }
-                        else
-                        {
-                            result += NumberStringTenUp(input, inputPrevious) + " Million ";
-                        }
+        //        }
+        //        else if (key == 7 || key == 8) // a million
+        //        {
+        //            if (key == 7 && length == 7)
+        //            {
+        //                result += NumberStringOneToNine(input) + " Million ";
+        //            }
+        //            else if (key == 8 && length >= 8)
+        //            {
+        //                if (input == "0")
+        //                {
+        //                    if(inputPrevious != "0")
+        //                    {
+        //                        result += NumberStringOneToNine(inputPrevious) + " Million ";
+        //                    }
+        //                    else if(inputPrevious == "0" && (length == 8 || length == 9))
+        //                    {
+        //                        result += "Million ";
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    result += NumberStringTenUp(input, inputPrevious) + " Million ";
+        //                }
 
-                    }
-                }
-                else if (key == 10 || key == 11) // a billion
-                {
-                    if (key == 10 && length == 10)
-                    {
-                        result += NumberStringOneToNine(input) + " Billion ";
-                    }
-                    else if (key == 11 && length >= 11)
-                    {
-                        if (input == "0")
-                        {
-                            if (inputPrevious != "0")
-                            {
-                                result += NumberStringOneToNine(inputPrevious) + " Billion ";
-                            }
-                            else if (inputPrevious == "0" && (length == 11 || length == 12))
-                            {
-                                result += "Billion ";
-                            }
-                        }
-                        else
-                        {
-                            result += NumberStringTenUp(input, inputPrevious) + " Billion ";
-                        }
+        //            }
+        //        }
+        //        else if (key == 10 || key == 11) // a billion
+        //        {
+        //            if (key == 10 && length == 10)
+        //            {
+        //                result += NumberStringOneToNine(input) + " Billion ";
+        //            }
+        //            else if (key == 11 && length >= 11)
+        //            {
+        //                if (input == "0")
+        //                {
+        //                    if (inputPrevious != "0")
+        //                    {
+        //                        result += NumberStringOneToNine(inputPrevious) + " Billion ";
+        //                    }
+        //                    else if (inputPrevious == "0" && (length == 11 || length == 12))
+        //                    {
+        //                        result += "Billion ";
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    result += NumberStringTenUp(input, inputPrevious) + " Billion ";
+        //                }
 
-                    }
-                }
-                else if (key == 13 || key == 14) // a trillion
-                {
-                    if (key == 13 && length == 13)
-                    {
-                        result += NumberStringOneToNine(input) + " Trillion ";
-                    }
-                    else if (key == 14 && length >= 14)
-                    {
-                        if (input == "0")
-                        {
-                            if (inputPrevious != "0")
-                            {
-                                result += NumberStringOneToNine(inputPrevious) + " Trillion ";
-                            }
-                            else if (inputPrevious == "0" && (length == 14 || length == 15))
-                            {
-                                result += "Trillion ";
-                            }
-                        }
-                        else
-                        {
-                            result += NumberStringTenUp(input, inputPrevious) + " Trillion ";
-                        }
+        //            }
+        //        }
+        //        else if (key == 13 || key == 14) // a trillion
+        //        {
+        //            if (key == 13 && length == 13)
+        //            {
+        //                result += NumberStringOneToNine(input) + " Trillion ";
+        //            }
+        //            else if (key == 14 && length >= 14)
+        //            {
+        //                if (input == "0")
+        //                {
+        //                    if (inputPrevious != "0")
+        //                    {
+        //                        result += NumberStringOneToNine(inputPrevious) + " Trillion ";
+        //                    }
+        //                    else if (inputPrevious == "0" && (length == 14 || length == 15))
+        //                    {
+        //                        result += "Trillion ";
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    result += NumberStringTenUp(input, inputPrevious) + " Trillion ";
+        //                }
 
-                    }
-                }
-                else if (key == 16 || key == 17) // a quadrillion
-                {
-                    if (key == 16 && length == 16)
-                    {
-                        result += NumberStringOneToNine(input) + " Quadrillion ";
-                    }
-                    else if (key == 17 && length >= 17)
-                    {
-                        if (input == "0")
-                        {
-                            if (inputPrevious != "0")
-                            {
-                                result += NumberStringOneToNine(inputPrevious) + " Quadrillion ";
-                            }
-                            else if (inputPrevious == "0" && (length == 17 || length == 18))
-                            {
-                                result += "Quadrillion ";
-                            }
-                        }
-                        else
-                        {
-                            result += NumberStringTenUp(input, inputPrevious) + " Quadrillion ";
-                        }
+        //            }
+        //        }
+        //        else if (key == 16 || key == 17) // a quadrillion
+        //        {
+        //            if (key == 16 && length == 16)
+        //            {
+        //                result += NumberStringOneToNine(input) + " Quadrillion ";
+        //            }
+        //            else if (key == 17 && length >= 17)
+        //            {
+        //                if (input == "0")
+        //                {
+        //                    if (inputPrevious != "0")
+        //                    {
+        //                        result += NumberStringOneToNine(inputPrevious) + " Quadrillion ";
+        //                    }
+        //                    else if (inputPrevious == "0" && (length == 17 || length == 18))
+        //                    {
+        //                        result += "Quadrillion ";
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    result += NumberStringTenUp(input, inputPrevious) + " Quadrillion ";
+        //                }
 
-                    }
-                }
-                else if (key == 19 || key == 20) // a quintrillion
-                {
-                    if (key == 19 && length == 19)
-                    {
-                        result += NumberStringOneToNine(input) + " Quintrillion ";
-                    }
-                    else if (key == 20 && length >= 20)
-                    {
-                        if (input == "0")
-                        {
-                            if (inputPrevious != "0")
-                            {
-                                result += NumberStringOneToNine(inputPrevious) + " Quintrillion ";
-                            }
-                            else if (inputPrevious == "0" && (length == 20 || length == 21))
-                            {
-                                result += "Quintrillion ";
-                            }
-                        }
-                        else
-                        {
-                            result += NumberStringTenUp(input, inputPrevious) + " Quintrillion ";
-                        }
+        //            }
+        //        }
+        //        else if (key == 19 || key == 20) // a quintrillion
+        //        {
+        //            if (key == 19 && length == 19)
+        //            {
+        //                result += NumberStringOneToNine(input) + " Quintrillion ";
+        //            }
+        //            else if (key == 20 && length >= 20)
+        //            {
+        //                if (input == "0")
+        //                {
+        //                    if (inputPrevious != "0")
+        //                    {
+        //                        result += NumberStringOneToNine(inputPrevious) + " Quintrillion ";
+        //                    }
+        //                    else if (inputPrevious == "0" && (length == 20 || length == 21))
+        //                    {
+        //                        result += "Quintrillion ";
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    result += NumberStringTenUp(input, inputPrevious) + " Quintrillion ";
+        //                }
 
-                    }
-                }
+        //            }
+        //        }
 
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message;
+        //    }
             
-        }
-
+        //}
+        #endregion
         private string NumberStringOneToNine(string input)
         {
             var inputInt = int.Parse(input);
