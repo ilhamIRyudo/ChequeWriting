@@ -172,9 +172,9 @@ namespace ChequeWriting
             return result;
         }
 
-        private string GetValueName(int n, int counter, string result)
+        private string GetValueName(int counter, int condition, string result)
         {
-            if(counter == 3)
+            if(condition == 3)
             {
                 if(result != "")
                 {
@@ -187,27 +187,27 @@ namespace ChequeWriting
             }
             else
             {
-                if (n == 1)
+                if (counter == 1)
                 {
                     return "Thousand ";
                 }
-                else if(n == 2)
+                else if(counter == 2)
                 {
                     return "Million ";
                 }
-                else if (n == 3)
+                else if (counter == 3)
                 {
                     return "Billion ";
                 }
-                else if (n == 4)
+                else if (counter == 4)
                 {
                     return "Trillion ";
                 }
-                else if (n == 5)
+                else if (counter == 5)
                 {
                     return "Quadrillion ";
                 }
-                else if (n == 6)
+                else if (counter == 6)
                 {
                     return "Quintrillion ";
                 }
